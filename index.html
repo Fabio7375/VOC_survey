@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VOC Survey — Studio BDZ</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0f1f3d;
+    --navy-light: #1a3260;
+    --gold: #b8973a;
+    --gold-light: #d4af5a;
+    --bg: #f8f9fc;
+    --white: #ffffff;
+    --text: #2d3748;
+    --muted: #718096;
+    --border: #e2e8f0;
+    --success: #38a169;
+    --error: #e53e3e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  header {
+    background: var(--navy);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .logo-mark {
+    width: 40px; height: 40px;
+    background: var(--gold);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: var(--navy); font-size: 16px;
+  }
+  header h1 { color: var(--white); font-size: 18px; font-weight: 500; }
+  header span { color: var(--gold); font-size: 13px; display: block; margin-top: 2px; }
+
+  .container { max-width: 680px; margin: 40px auto; padding: 0 20px 60px; }
+
+  /* Progress */
+  .progress-wrap { margin-bottom: 32px; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .progress-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.4s ease; }
+
+  /* Card */
+  .card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: 0 2px 8px rgba(15,31,61,0.08);
+    margin-bottom: 16px;
+  }
+  .card-sezione {
+    font-size: 11px; font-weight: 600; letter-spacing: 1.2px;
+    color: var(--gold); text-transform: uppercase; margin-bottom: 8px;
+  }
+  .card h2 { font-size: 20px; color: var(--navy); font-weight: 600; margin-bottom: 6px; }
+  .card p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+  /* Question */
+  .question-block { margin-bottom: 28px; }
+  .question-block:last-child { margin-bottom: 0; }
+  .question-text {
+    font-size: 15px; font-weight: 500; color: var(--navy);
+    margin-bottom: 14px; line-height: 1.5;
+  }
+  .required { color: var(--gold); margin-left: 3px; }
+
+  /* Likert */
+  .likert-wrap { display: flex; gap: 10px; flex-wrap: wrap; }
+  .likert-option { flex: 1; min-width: 44px; }
+  .likert-option input { display: none; }
+  .likert-option label {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 10px 6px; border: 2px solid var(--border);
+    border-radius: 8px; cursor: pointer; transition: all 0.15s;
+    font-size: 18px; color: var(--muted);
+  }
+  .likert-option label span.num {
+    font-size: 11px; font-weight: 600; color: var(--muted); margin-top: 4px;
+  }
+  .likert-option input:checked + label {
+    border-color: var(--gold); background: #fdf8ec; color: var(--gold);
+  }
+  .likert-option input:checked + label span.num { color: var(--navy); }
+  .likert-labels { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: var(--muted); }
+
+  /* NPS */
+  .nps-wrap { display: flex; gap: 6px; flex-wrap: wrap; }
+  .nps-option { flex: 1; min-width: 38px; }
+  .nps-option input { display: none; }
+  .nps-option label {
+    display: block; text-align: center; padding: 10px 4px;
+    border: 2px solid var(--border); border-radius: 8px;
+    cursor: pointer; font-size: 14px; font-weight: 600;
+    transition: all 0.15s; color: var(--muted);
+  }
+  .nps-option input:checked + label { border-color: var(--navy); background: var(--navy); color: var(--white); }
+  .nps-labels { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: var(--muted); }
+
+  /* Radio / Checkbox */
+  .options-list { display: flex; flex-direction: column; gap: 10px; }
+  .opt-item input { display: none; }
+  .opt-item label {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; border: 2px solid var(--border);
+    border-radius: 8px; cursor: pointer; transition: all 0.15s; font-size: 14px;
+  }
+  .opt-item label::before {
+    content: ''; width: 18px; height: 18px; min-width: 18px;
+    border: 2px solid var(--border); border-radius: 50%; transition: all 0.15s;
+  }
+  .opt-item.checkbox label::before { border-radius: 4px; }
+  .opt-item input:checked + label { border-color: var(--gold); background: #fdf8ec; }
+  .opt-item input:checked + label::before {
+    background: var(--gold); border-color: var(--gold);
+    box-shadow: inset 0 0 0 3px white;
+  }
+
+  /* Textarea / Input */
+  textarea, input[type="text"], input[type="email"] {
+    width: 100%; padding: 12px 14px;
+    border: 2px solid var(--border); border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px;
+    color: var(--text); resize: vertical; transition: border 0.15s;
+    outline: none;
+  }
+  textarea:focus, input:focus { border-color: var(--gold); }
+  textarea { min-height: 100px; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
+  .btn {
+    padding: 12px 28px; border-radius: 8px; font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s;
+    border: none;
+  }
+  .btn-primary { background: var(--navy); color: var(--white); }
+  .btn-primary:hover { background: var(--navy-light); }
+  .btn-secondary { background: transparent; color: var(--navy); border: 2px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--navy); }
+  .btn-gold { background: var(--gold); color: var(--navy); }
+  .btn-gold:hover { background: var(--gold-light); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* States */
+  #loading, #error-view, #success-view, #already-done { display: none; }
+  .spinner {
+    width: 40px; height: 40px; border: 3px solid var(--border);
+    border-top-color: var(--gold); border-radius: 50%;
+    animation: spin 0.8s linear infinite; margin: 40px auto;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .success-icon { font-size: 56px; text-align: center; margin-bottom: 16px; }
+  .error-box {
+    background: #fff5f5; border: 1px solid #fed7d7;
+    border-radius: 8px; padding: 16px; color: var(--error); font-size: 14px;
+  }
+  .info-box {
+    background: #fffbeb; border: 1px solid #fbd38d;
+    border-radius: 8px; padding: 16px; color: #744210; font-size: 14px;
+  }
+
+  @media (max-width: 480px) {
+    .card { padding: 20px; }
+    .likert-wrap { gap: 6px; }
+    .nps-wrap { gap: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">B</div>
+  <div>
+    <h1>Studio BDZ</h1>
+    <span>Questionario di soddisfazione</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Loading -->
+  <div id="loading">
+    <div class="spinner"></div>
+    <p style="text-align:center;color:var(--muted);font-size:14px;">Caricamento in corso...</p>
+  </div>
+
+  <!-- Already done -->
+  <div id="already-done">
+    <div class="card" style="text-align:center;padding:48px 32px;">
+      <div class="success-icon">✅</div>
+      <h2 style="margin-bottom:8px;">Hai già compilato questo questionario</h2>
+      <p>Grazie per il tuo contributo! Il tuo feedback è stato già registrato.</p>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div id="error-view">
+    <div class="card">
+      <div class="error-box" id="error-msg">Si è verificato un errore.</div>
+    </div>
+  </div>
+
+  <!-- Survey -->
+  <div id="survey-view">
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="step-label">Sezione 1</span>
+        <span id="step-count">0 / 0</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+    <div id="sezioni-container"></div>
+    <div class="btn-row" id="btn-row">
+      <button class="btn btn-secondary" id="btn-prev" onclick="prevStep()" style="display:none">← Indietro</button>
+      <button class="btn btn-primary" id="btn-next" onclick="nextStep()">Avanti →</button>
+      <button class="btn btn-gold" id="btn-submit" onclick="submitSurvey()" style="display:none">Invia questionario ✓</button>
+    </div>
+  </div>
+
+  <!-- Success -->
+  <div id="success-view">
+    <div class="card" style="text-align:center;padding:48px 32px;">
+      <div class="success-icon">🎉</div>
+      <h2 style="margin-bottom:8px;">Grazie per il tuo feedback!</h2>
+      <p>Le tue risposte sono state registrate con successo.<br>Il tuo contributo è prezioso per noi.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ====== CONFIGURAZIONE ======
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbz0J5MM9_8ZctOnv6CHL5eaJ0VbqJGYF9bc-DdEg1HdEDUxmzxHSYEOxNhser1g6x73Kw/exec'; // sostituire con URL Web App GAS
+
+// ====== STATO ======
+let clienteId = '';
+let clienteNome = '';
+let tipoSurvey = '';
+let domande = [];
+let sezioni = [];
+let currentStep = 0;
+let risposte = {};
+
+// ====== INIT ======
+window.addEventListener('DOMContentLoaded', init);
+
+function getParam(name) {
+  return new URLSearchParams(window.location.search).get(name) || '';
+}
+
+async function init() {
+  clienteId = getParam('id');
+  tipoSurvey = getParam('tipo') || 'generale';
+
+  const flagKey = `voc_compiled_${clienteId}_${tipoSurvey}`;
+  if (clienteId && localStorage.getItem(flagKey)) {
+    show('already-done'); return;
+  }
+
+  show('loading');
+
+  try {
+    // carica cliente
+    if (clienteId) {
+      const res = await fetchGAS({ action: 'getCliente', id: clienteId });
+      if (res.cliente) clienteNome = res.cliente.nome || '';
+    }
+
+    // carica domande
+    const res2 = await fetchGAS({ action: 'getDomande', tipo: tipoSurvey });
+    domande = res2.domande || [];
+
+    if (domande.length === 0) {
+      showError('Nessuna domanda trovata per questo questionario.');
+      return;
+    }
+
+    // raggruppa per sezione
+    const sezioniMap = {};
+    domande.forEach(d => {
+      const s = d.sezione || 'Generale';
+      if (!sezioniMap[s]) sezioniMap[s] = [];
+      sezioniMap[s].push(d);
+    });
+    sezioni = Object.entries(sezioniMap).map(([nome, domande]) => ({ nome, domande }));
+
+    renderSezioni();
+    show('survey-view');
+    updateProgress();
+  } catch (e) {
+    showError('Errore nel caricamento: ' + e.message);
+  }
+}
+
+async function fetchGAS(params) {
+  const url = new URL(GAS_URL);
+  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+  const r = await fetch(url);
+  return r.json();
+}
+
+// ====== RENDER ======
+function renderSezioni() {
+  const container = document.getElementById('sezioni-container');
+  container.innerHTML = '';
+
+  sezioni.forEach((sez, sIdx) => {
+    const div = document.createElement('div');
+    div.id = `sezione-${sIdx}`;
+    div.style.display = sIdx === 0 ? 'block' : 'none';
+
+    let html = `<div class="card">
+      <div class="card-sezione">${escHtml(sez.nome)}</div>
+      <h2 style="margin-bottom:20px;">${escHtml(sez.nome)}</h2>`;
+
+    sez.domande.forEach(d => {
+      html += renderDomanda(d);
+    });
+
+    html += '</div>';
+    div.innerHTML = html;
+    container.appendChild(div);
+  });
+
+  // Sezione note finali
+  const noteDiv = document.createElement('div');
+  noteDiv.id = `sezione-${sezioni.length}`;
+  noteDiv.style.display = 'none';
+  noteDiv.innerHTML = `<div class="card">
+    <div class="card-sezione">Conclusione</div>
+    <h2 style="margin-bottom:20px;">Vuoi aggiungere qualcosa?</h2>
+    <div class="question-block">
+      <div class="question-text">Note libere o suggerimenti (facoltativo)</div>
+      <textarea id="note_libere" placeholder="Scrivi qui eventuali commenti..."></textarea>
+    </div>
+  </div>`;
+  container.appendChild(noteDiv);
+}
+
+function renderDomanda(d) {
+  const id = `q_${d.id}`;
+  let html = `<div class="question-block" data-id="${d.id}" data-tipo="${d.tipo_domanda}">
+    <div class="question-text">${escHtml(d.testo)}<span class="required">*</span></div>`;
+
+  if (d.tipo_domanda === 'likert') {
+    html += renderLikert(id);
+  } else if (d.tipo_domanda === 'nps') {
+    html += renderNPS(id);
+  } else if (d.tipo_domanda === 'radio' || d.tipo_domanda === 'scelta') {
+    html += renderRadio(id, d.opzioni);
+  } else if (d.tipo_domanda === 'checkbox') {
+    html += renderCheckbox(id, d.opzioni);
+  } else if (d.tipo_domanda === 'testo_breve') {
+    html += `<input type="text" id="${id}" placeholder="La tua risposta...">`;
+  } else {
+    html += `<textarea id="${id}" placeholder="La tua risposta..."></textarea>`;
+  }
+
+  html += '</div>';
+  return html;
+}
+
+function renderLikert(id) {
+  const emojis = ['😠','😞','😐','🙂','😊'];
+  const labels = ['Per niente','Poco','Abbastanza','Molto','Moltissimo'];
+  let h = '<div class="likert-wrap">';
+  for (let i = 1; i <= 5; i++) {
+    h += `<div class="likert-option">
+      <input type="radio" name="${id}" id="${id}_${i}" value="${i}" onchange="saveRisposta(this)">
+      <label for="${id}_${i}">${emojis[i-1]}<span class="num">${i}</span></label>
+    </div>`;
+  }
+  h += `</div><div class="likert-labels"><span>Per niente</span><span>Moltissimo</span></div>`;
+  return h;
+}
+
+function renderNPS(id) {
+  let h = '<div class="nps-wrap">';
+  for (let i = 0; i <= 10; i++) {
+    h += `<div class="nps-option">
+      <input type="radio" name="${id}" id="${id}_${i}" value="${i}" onchange="saveRisposta(this)">
+      <label for="${id}_${i}">${i}</label>
+    </div>`;
+  }
+  h += `</div><div class="nps-labels"><span>Non lo consiglierei</span><span>Lo consiglierei assolutamente</span></div>`;
+  return h;
+}
+
+function renderRadio(id, opzioni) {
+  let h = '<div class="options-list">';
+  opzioni.forEach((opt, i) => {
+    const val = opt.trim();
+    h += `<div class="opt-item">
+      <input type="radio" name="${id}" id="${id}_${i}" value="${val}" onchange="saveRisposta(this)">
+      <label for="${id}_${i}">${escHtml(val)}</label>
+    </div>`;
+  });
+  return h + '</div>';
+}
+
+function renderCheckbox(id, opzioni) {
+  let h = '<div class="options-list">';
+  opzioni.forEach((opt, i) => {
+    const val = opt.trim();
+    h += `<div class="opt-item checkbox">
+      <input type="checkbox" name="${id}" id="${id}_${i}" value="${val}" onchange="saveCheckbox('${id}')">
+      <label for="${id}_${i}">${escHtml(val)}</label>
+    </div>`;
+  });
+  return h + '</div>';
+}
+
+// ====== RISPOSTE ======
+function saveRisposta(el) {
+  const qid = el.name.replace('q_', '');
+  risposte[qid] = el.value;
+}
+
+function saveCheckbox(id) {
+  const checked = [...document.querySelectorAll(`input[name="${id}"]:checked`)].map(c => c.value);
+  const qid = id.replace('q_', '');
+  risposte[qid] = checked;
+}
+
+// ====== NAVIGAZIONE ======
+function updateProgress() {
+  const total = sezioni.length + 1;
+  const pct = ((currentStep + 1) / total) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('step-label').textContent = currentStep < sezioni.length
+    ? (sezioni[currentStep]?.nome || `Sezione ${currentStep + 1}`)
+    : 'Note finali';
+  document.getElementById('step-count').textContent = `${currentStep + 1} / ${total}`;
+
+  document.getElementById('btn-prev').style.display = currentStep > 0 ? 'inline-flex' : 'none';
+  const isLast = currentStep === sezioni.length;
+  document.getElementById('btn-next').style.display = isLast ? 'none' : 'inline-flex';
+  document.getElementById('btn-submit').style.display = isLast ? 'inline-flex' : 'none';
+}
+
+function showStep(idx) {
+  for (let i = 0; i <= sezioni.length; i++) {
+    const el = document.getElementById(`sezione-${i}`);
+    if (el) el.style.display = i === idx ? 'block' : 'none';
+  }
+}
+
+function nextStep() {
+  if (!validateStep()) return;
+  currentStep++;
+  showStep(currentStep);
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function prevStep() {
+  currentStep--;
+  showStep(currentStep);
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function validateStep() {
+  if (currentStep >= sezioni.length) return true;
+  const sez = sezioni[currentStep];
+  for (const d of sez.domande) {
+    if (['likert','nps','radio','scelta'].includes(d.tipo_domanda)) {
+      const sel = document.querySelector(`input[name="q_${d.id}"]:checked`);
+      if (!sel) {
+        alert(`Risposta obbligatoria: "${d.testo}"`);
+        return false;
+      }
+    } else if (d.tipo_domanda === 'testo' || d.tipo_domanda === 'testo_breve') {
+      const el = document.getElementById(`q_${d.id}`);
+      if (el && !el.value.trim()) {
+        alert(`Risposta obbligatoria: "${d.testo}"`);
+        return false;
+      }
+    }
+  }
+  // salva valori textarea/input
+  sez.domande.forEach(d => {
+    const el = document.getElementById(`q_${d.id}`);
+    if (el) risposte[d.id] = el.value;
+  });
+  return true;
+}
+
+// ====== SUBMIT ======
+async function submitSurvey() {
+  const noteEl = document.getElementById('note_libere');
+  const note = noteEl ? noteEl.value : '';
+
+  // cerca NPS
+  let npsScore = '';
+  let npsMotivo = '';
+  domande.forEach(d => {
+    if (d.tipo_domanda === 'nps') npsScore = risposte[d.id] || '';
+    if (d.id === 'nps_motivo') npsMotivo = risposte[d.id] || '';
+  });
+
+  const payload = {
+    action: 'salvaRisposta',
+    cliente_id: clienteId,
+    cliente_nome: clienteNome,
+    tipo_survey: tipoSurvey,
+    nps_score: npsScore,
+    nps_motivo: npsMotivo,
+    risposte,
+    note_libere: note
+  };
+
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  btn.textContent = 'Invio in corso...';
+
+  try {
+    const r = await fetch(GAS_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    const data = await r.json();
+
+    if (data.success) {
+      if (clienteId) {
+        localStorage.setItem(`voc_compiled_${clienteId}_${tipoSurvey}`, '1');
+      }
+      show('success-view');
+    } else {
+      throw new Error(data.error || 'Errore sconosciuto');
+    }
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = 'Invia questionario ✓';
+    alert('Errore nell\'invio: ' + e.message);
+  }
+}
+
+// ====== UTILS ======
+function show(id) {
+  ['loading','survey-view','success-view','error-view','already-done'].forEach(s => {
+    document.getElementById(s).style.display = s === id ? 'block' : 'none';
+  });
+}
+
+function showError(msg) {
+  document.getElementById('error-msg').textContent = msg;
+  show('error-view');
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
