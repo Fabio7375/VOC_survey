@@ -482,6 +482,7 @@ function validateStep() {
         return false;
       }
     } else if (d.tipo_domanda === 'testo' || d.tipo_domanda === 'testo_breve') {
+      if (d.testo && d.testo.toLowerCase().includes('facoltativo')) continue;
       const el = document.getElementById(`q_${d.id}`);
       if (el && !el.value.trim()) {
         alert(`Risposta obbligatoria: "${d.testo}"`);
