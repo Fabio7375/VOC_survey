@@ -350,8 +350,9 @@ function renderSezioni() {
 
 function renderDomanda(d) {
   const id = `q_${d.id}`;
+  const isTesto = d.tipo_domanda === 'testo' || d.tipo_domanda === 'testo_breve';
   let html = `<div class="question-block" data-id="${d.id}" data-tipo="${d.tipo_domanda}">
-    <div class="question-text">${escHtml(d.testo)}<span class="required">*</span></div>`;
+    <div class="question-text">${escHtml(d.testo)}${isTesto ? ' <span style="color:var(--muted);font-size:12px;font-weight:400">(facoltativo)</span>' : '<span class="required">*</span>'}</div>`;
 
   if (d.tipo_domanda === 'likert') {
     html += renderLikert(id);
@@ -478,13 +479,6 @@ function validateStep() {
     if (['likert','nps','radio','scelta'].includes(d.tipo_domanda)) {
       const sel = document.querySelector(`input[name="q_${d.id}"]:checked`);
       if (!sel) {
-        alert(`Risposta obbligatoria: "${d.testo}"`);
-        return false;
-      }
-    } else if (d.tipo_domanda === 'testo' || d.tipo_domanda === 'testo_breve') {
-      if (d.testo && d.testo.toLowerCase().includes('facoltativo')) continue;
-      const el = document.getElementById(`q_${d.id}`);
-      if (el && !el.value.trim()) {
         alert(`Risposta obbligatoria: "${d.testo}"`);
         return false;
       }
